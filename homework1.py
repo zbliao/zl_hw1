@@ -10,7 +10,6 @@
 
 #############
 
-
 # Question 1: Load and merge the data into a panel dataframe, with the columns: "state", "year", 
 # and one for each of the 10 industries.  Every state-year combination should 
 # uniquely identify a row.  No more and no less than 12 columns should remain.  
@@ -18,7 +17,7 @@
 
 import pandas as pd
 import os
-from pandas.api.types import is_numeric_dtype
+
 # Import files
 base_path = r'/Users/zibingliao/Documents/GitHub/zl_hw1'
 total_data = 'SAEMP25N total.csv'
@@ -76,30 +75,26 @@ df_final_top5_manu = df_final_top5_manu.unstack()
 df_final_top5_manu['change'] = df_final_top5_manu['2017'] - df_final_top5_manu['2000']
 df_final_top5_manu = df_final_top5_manu.reset_index()
 df_final_top5_manu.plot(x='state',y='change',kind = 'scatter')
+# Conclusion: Top 5 states are Indiana, Wisconsin, Michigan state, Arkansas, and North Carolina.
+# Changes are -0.0441869, -0.045573, -0.0482598, -0.0626454, and -0.0763406.
 
 # b. Show which five states have the highest concentration of employment in a any 
 # single industry in each of 2000 and 2017, and what those industries are.
 df_final_2000 = df_final.sort_values(by=['year']).iloc[:51] 
 df_final_2017 = df_final.sort_values(by=['year']).iloc[51:] 
-top5_concentration_2000 = df_final_2000.nlargest(5, columns = 
-        ['Arts, entertainment, and recreation',
-         'Educational services',
-         'Farm employment',
-         'Finance and insurance',
-         'Government and government enterprises',
-         'Health care and social assistance',
-         'Information',
-         'Manufacturing',
-         'Mining, quarrying, and oil and gas extraction',
-         'Retail trade'], keep='all')
-top5_concentration_2000
+industry_2000 = df_final_2000.idxmax(axis=1)
+employment_2000 = df_final_2000.max(axis=1)
+df_2000 = pd.concat([industry_2000, employment_2000], axis=1)
+top5_concentration_2000 = df_2000.nlargest(5,1)
+# Conclusion: Top 5 states are
+# District of Columbia (0.327406), Alaska (0.248069), Hawaii (0.221494), 
+# New Mexico (0.209680), Wyoming (0.199986), all in Government and government enterprises.
 
-####################################
-dfs = []
-
-for col in df_final_2000:
-    top_values = []
-    if is_numeric_dtype(df_final_2000[col]):
-        top_values = df_final_2000[col].nlargest(n=5)
-        dfs.append(pd.DataFrame({col: top_values}).reset_index(drop=True))
-pd.concat(dfs, axis=1)
+industry_2017 = df_final_2017.idxmax(axis=1)
+employment_2017 = df_final_2017.max(axis=1)
+df_2017 = pd.concat([industry_2017, employment_2017], axis=1)
+top5_concentration_2017 = df_2017.nlargest(5,1)
+top5_concentration_2017
+# Conclusion: Top 5 states are
+# District of Columbia (0.277521), Alaska (0.225462), Hawaii (0.197694), 
+# New Mexico (187749), Wyoming (0.187475), all in Government and government enterprises.
